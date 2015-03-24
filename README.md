@@ -7,6 +7,9 @@ Right now it allows two or three players mode. In the free time I'm planning to 
 Have fun playing the game and feel free to play with the code ;)
 
 **Controls**
+
 Player1 (RED): Left, Right (keys)
+
 Player2 (GREEN): a, s
+
 Player3 (BLUE): k, l
