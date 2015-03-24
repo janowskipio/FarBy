@@ -12,7 +12,6 @@ WINWIDTH = 1280  # width of the program's window, in pixels
 WINHEIGHT = 720  # height in pixels
 RADIUS = 5       # radius of the circles
 PLAYERS = 1      # number of players
-MAX_SCORE = 5        # score counter
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -63,14 +62,16 @@ class Player(object):  # class which generates random position and angle for pla
 
 
 def rungame():
-    global WINNER, MAX_SCORE
+    global WINNER
     DISPLAYSURF.fill(BLACK)
     pygame.draw.aaline(DISPLAYSURF, WHITE, (WINWIDTH-105, 0), (WINWIDTH-105, WINHEIGHT))
     first = True
     run = True
     players_running = PLAYERS
     if PLAYERS == 3:
-        MAX_SCORE = 10
+        max_score = 10
+    else:
+        max_score = 5
 
     # generating players
     player1 = Player()
@@ -162,7 +163,7 @@ def rungame():
         pygame.display.update()
 
         if players_running == 1:
-            if any(n >= MAX_SCORE for n in (player1.score, player2.score, player3.score)):
+            if any(n >= max_score for n in (player1.score, player2.score, player3.score)):
                 run = False
                 for i in range(PLAYERS):
                     if player_t[i].score == max(player1.score, player2.score, player3.score):
