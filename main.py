@@ -4,6 +4,8 @@ import time
 import pygame
 import pygame.gfxdraw
 
+from menu import *
+
 from math import *
 from pygame.locals import *
 
@@ -47,16 +49,16 @@ class Player(object):  # class which generates random position and angle for pla
         self.colour = None
         self.score = 0
 
-    def gen(self):
+    def gen(self):  # generates random position and direction
         self.x = random.randrange(50, WINWIDTH - 155)
         self.y = random.randrange(50, WINHEIGHT - 50)
         self.angle = random.randrange(0, 360)
 
-    def move(self):  # def which computes current movement
+    def move(self):  # computes current movement
         self.x += int(RADIUS * 2 * cos(radians(self.angle)))
         self.y += int(RADIUS * 2 * sin(radians(self.angle)))
 
-    def draw(self):  # def for drawing
+    def draw(self):  # drawing players
         pygame.gfxdraw.aacircle(DISPLAYSURF, self.x, self.y, RADIUS, self.colour)
         pygame.gfxdraw.filled_circle(DISPLAYSURF, self.x, self.y, RADIUS, self.colour)
 
@@ -85,8 +87,6 @@ def rungame():
         # checking how many players are needed running
         if PLAYERS < 3:
             player3.running = False
-        if PLAYERS < 2:
-            player2.running = False
 
         # initializing players colours
         player1.colour = P1COLOUR
@@ -111,11 +111,14 @@ def rungame():
                     player_t[i].angle += 360
                 elif player_t[i].angle >= 360:
                     player_t[i].angle -= 360
+
+                # checking if someone fails
                 if (player_t[i].x > WINWIDTH-115 or player_t[i].x < 3 or
                             player_t[i].y > WINHEIGHT-3 or player_t[i].y < 3 or
                             DISPLAYSURF.get_at((player_t[i].x, player_t[i].y)) != BLACK):
                     player_t[i].running = False
                     players_running -= 1
+
                     if i == 0:
                         if player2.running:
                             player2.score += 1
@@ -131,6 +134,7 @@ def rungame():
                             player1.score += 1
                         if player2.running:
                             player2.score += 1
+
                 player_t[i].draw()
                 player_t[i].move()
 
@@ -159,9 +163,11 @@ def rungame():
         # drawing scores
         scoring(player1.score, player2.score, player3.score, P1COLOUR, P2COLOUR, P3COLOUR)
 
-        SCREEN.blit(DISPLAYSURF, (0, 0))  # drawing all on the screen
+        # drawing all on the screen
+        SCREEN.blit(DISPLAYSURF, (0, 0))
         pygame.display.update()
 
+        # checking if someone reach max score and win
         if players_running == 1:
             if any(n >= max_score for n in (player1.score, player2.score, player3.score)):
                 run = False
@@ -188,33 +194,10 @@ def rungame():
 
 def start_screen():
     global PLAYERS
-    SCREEN.fill(BLACK)
-    start_msg1 = MY_FONT.render("Welcome in FarBy game!", 1, WHITE)
-    start_msg2 = MY_FONT.render("Select number of players by pressing 2 or 3.", 1, WHITE)
-    start_msg3 = MY_FONT.render("Controls: player1 -> Left, Right (keys)", 1, WHITE)
-    start_msg4 = MY_FONT.render("player2 -> a, s", 1, WHITE)
-    start_msg5 = MY_FONT.render("player3 -> k, l", 1, WHITE)
-    SCREEN.blit(start_msg1, (WINWIDTH/2 - 150, WINHEIGHT/2 - 120))
-    SCREEN.blit(start_msg2, (WINWIDTH/2 - 270, WINHEIGHT/2 - 60))
-    SCREEN.blit(start_msg3, (WINWIDTH/2 - 272, WINHEIGHT/2 - 30))
-    SCREEN.blit(start_msg4, (WINWIDTH/2 - 155, WINHEIGHT/2))
-    SCREEN.blit(start_msg5, (WINWIDTH/2 - 155, WINHEIGHT/2 + 30))
-    pygame.display.update()
-    start = True
-    while start:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                shutdown()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    shutdown()
-                elif event.key == K_2:
-                    PLAYERS = 2
-                    start = False
-                elif event.key == K_3:
-                    PLAYERS = 3
-                    start = False
-        FPS_CLOCK.tick(10)
+    menu = Menu(['2 Players', '3 Players', 'Help', 'Exit'])
+    menu.init(SCREEN)
+    menu.draw()
+    PLAYERS = menu.start()
 
 
 def scoring(play1score, play2score, play3score, colour1, colour2, colour3):
@@ -235,7 +218,7 @@ def scoring(play1score, play2score, play3score, colour1, colour2, colour3):
 
 def gameover():
     end_msg = MY_FONT.render("Player %d wins! Press button to go to main menu." % WINNER, 1, WHITE, BLACK)
-    SCREEN.blit(end_msg, (WINWIDTH/2 - 230, WINHEIGHT/5))
+    SCREEN.blit(end_msg, (WINWIDTH/2 - 280, WINHEIGHT/5))
     pygame.display.update()
     end = True
     while end:
@@ -248,11 +231,6 @@ def gameover():
                 else:
                     end = False
         FPS_CLOCK.tick(10)
-
-
-def shutdown():
-    pygame.quit()
-    sys.exit()
 
 
 if __name__ == '__main__':
