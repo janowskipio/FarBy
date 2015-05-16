@@ -8,7 +8,7 @@ Have fun playing the game and feel free to change and submit the code ;)
 
 **Rules**
 
-You handle yor line and you must sidetrack the lines of other players and walls. For each death of the opponent you get one point. When only one player has left, the round is finished. For the 2 players mode max score is set to 5, for 3 players mode - to 10.
+You handle your line and you must sidetrack the lines of other players and walls. For each death of the opponent you get one point. When only one player has left, the round is finished. For the 2 players mode max score is set to 5, for 3 players mode - to 10.
 
 **Controls**
 
