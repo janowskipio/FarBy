@@ -2,7 +2,7 @@
 Inspired by Achtung die kurve game.
 Written in Python (3.4) with use of the Pygame library.
 
-Right now it allows two or three players mode. In the free time I'm planning to improve a class responsible for game menu (include writing the HELP section), increase max number of players to 5, work on the color sets and make some other changes (rewrite some parts of the code to achieve simpler and clearer code + comments describing how consecutive methods works).
+Right now it allows two or three players mode. In the free time I'm planning to improve a class responsible for game menu (include writing the HELP section), increase max number of players to 5, work on the color sets and make some other changes (rewrite some parts of the code to achieve simpler and clearer code).
 
 Have fun playing the game and feel free to change and submit the code ;)
 
