@@ -26,7 +26,8 @@ P3COLOUR = BLUE
 
 
 def main():
-    global FPS_CLOCK, SCREEN, DISPLAYSURF, MY_FONT, WINNER
+    # main loop
+    global FPS_CLOCK, SCREEN, DISPLAYSURF, MY_FONT
     pygame.init()
     FPS_CLOCK = pygame.time.Clock()
     SCREEN = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
@@ -34,8 +35,7 @@ def main():
     pygame.display.set_caption('FarBy!')
     # pygame.mixer.music.load('test.mp3')
     # pygame.mixer.music.play(-1, 0.0)
-    MY_FONT = pygame.font.SysFont('arial', 30, 1)
-    WINNER = 0
+    MY_FONT = pygame.font.SysFont('bauhaus93', 37)
 
     while True:
         start_screen()
@@ -43,22 +43,26 @@ def main():
         gameover()
 
 
-class Player(object):  # class which generates random position and angle for players
+class Player(object):
+    # Class which can be used to generate random position and angle, to compute movement values and to draw player
     def __init__(self):
         self.running = True
         self.colour = None
         self.score = 0
 
-    def gen(self):  # generates random position and direction
-        self.x = random.randrange(50, WINWIDTH - 155)
+    def gen(self):
+        # generates random position and direction
+        self.x = random.randrange(50, WINWIDTH - 165)
         self.y = random.randrange(50, WINHEIGHT - 50)
         self.angle = random.randrange(0, 360)
 
-    def move(self):  # computes current movement
+    def move(self):
+        # computes current movement
         self.x += int(RADIUS * 2 * cos(radians(self.angle)))
         self.y += int(RADIUS * 2 * sin(radians(self.angle)))
 
-    def draw(self):  # drawing players
+    def draw(self):
+        # drawing players
         pygame.gfxdraw.aacircle(DISPLAYSURF, self.x, self.y, RADIUS, self.colour)
         pygame.gfxdraw.filled_circle(DISPLAYSURF, self.x, self.y, RADIUS, self.colour)
 
@@ -66,7 +70,8 @@ class Player(object):  # class which generates random position and angle for pla
 def rungame():
     global WINNER
     DISPLAYSURF.fill(BLACK)
-    pygame.draw.aaline(DISPLAYSURF, WHITE, (WINWIDTH-105, 0), (WINWIDTH-105, WINHEIGHT))
+    pygame.draw.aaline(DISPLAYSURF, WHITE, (WINWIDTH-115, 0), (WINWIDTH-115, WINHEIGHT))
+    WINNER = []
     first = True
     run = True
     players_running = PLAYERS
@@ -83,7 +88,7 @@ def rungame():
     for i in range(PLAYERS):
         player_t[i].gen()
 
-    while run:  # main loop
+    while run:
         # checking how many players are needed running
         if PLAYERS < 3:
             player3.running = False
@@ -113,7 +118,7 @@ def rungame():
                     player_t[i].angle -= 360
 
                 # checking if someone fails
-                if (player_t[i].x > WINWIDTH-115 or player_t[i].x < 3 or
+                if (player_t[i].x > WINWIDTH-125 or player_t[i].x < 3 or
                             player_t[i].y > WINHEIGHT-3 or player_t[i].y < 3 or
                             DISPLAYSURF.get_at((player_t[i].x, player_t[i].y)) != BLACK):
                     player_t[i].running = False
@@ -173,11 +178,11 @@ def rungame():
                 run = False
                 for i in range(PLAYERS):
                     if player_t[i].score == max(player1.score, player2.score, player3.score):
-                        WINNER = i + 1
+                        WINNER.append(i + 1)
                 continue
             pygame.time.wait(1000)
             DISPLAYSURF.fill(BLACK)
-            pygame.draw.aaline(DISPLAYSURF, WHITE, (WINWIDTH-105, 0), (WINWIDTH-105, WINHEIGHT))
+            pygame.draw.aaline(DISPLAYSURF, WHITE, (WINWIDTH-115, 0), (WINWIDTH-115, WINHEIGHT))
             first = True
             players_running = PLAYERS
             for i in range(PLAYERS):
@@ -193,6 +198,7 @@ def rungame():
 
 
 def start_screen():
+    # initializing menu, getting number of players after choosing game mode
     global PLAYERS
     menu = Menu(['2 Players', '3 Players', 'Help', 'Exit'])
     menu.init(SCREEN)
@@ -201,6 +207,7 @@ def start_screen():
 
 
 def scoring(play1score, play2score, play3score, colour1, colour2, colour3):
+    # drawing scores
     colour0 = WHITE
     if PLAYERS == 2:
         colour3 = BLACK
@@ -210,15 +217,20 @@ def scoring(play1score, play2score, play3score, colour1, colour2, colour3):
     score1_msg = MY_FONT.render("P1: " + str(play1score), 1, colour1, BLACK)
     score2_msg = MY_FONT.render("P2: " + str(play2score), 1, colour2, BLACK)
     score3_msg = MY_FONT.render("P3: " + str(play3score), 1, colour3, BLACK)
-    DISPLAYSURF.blit(score_msg, (WINWIDTH - 90, WINHEIGHT/10))
-    DISPLAYSURF.blit(score1_msg, (WINWIDTH - 85, WINHEIGHT/10 + 30))
-    DISPLAYSURF.blit(score2_msg, (WINWIDTH - 85, WINHEIGHT/10 + 60))
-    DISPLAYSURF.blit(score3_msg, (WINWIDTH - 85, WINHEIGHT/10 + 90))
+    DISPLAYSURF.blit(score_msg, (WINWIDTH - 110, WINHEIGHT/10))
+    DISPLAYSURF.blit(score1_msg, (WINWIDTH - 108, WINHEIGHT/10 + 40))
+    DISPLAYSURF.blit(score2_msg, (WINWIDTH - 108, WINHEIGHT/10 + 80))
+    DISPLAYSURF.blit(score3_msg, (WINWIDTH - 108, WINHEIGHT/10 + 120))
 
 
 def gameover():
-    end_msg = MY_FONT.render("Player %d wins! Press button to go to main menu." % WINNER, 1, WHITE, BLACK)
-    SCREEN.blit(end_msg, (WINWIDTH/2 - 280, WINHEIGHT/5))
+    # drawing winner/s and waiting for key press
+    if len(WINNER) == 1:
+        end_msg = "Player %d wins! Press button to go to main menu." % WINNER[0]
+    elif len(WINNER) == 2:
+        end_msg = "Players %d and %d ties! Press button to go to main menu." % (WINNER[0], WINNER[1])
+    end_msg_render = MY_FONT.render(end_msg, 1, WHITE, BLACK)
+    SCREEN.blit(end_msg_render, ((WINWIDTH - MY_FONT.size(end_msg)[0]) / 2, WINHEIGHT/5))
     pygame.display.update()
     end = True
     while end:
